@@ -7,7 +7,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-//Run runs the server
 func Run() {
 	r := mux.NewRouter()
 	r.HandleFunc("/", helloWorldHandler).Methods("GET")
