@@ -5,9 +5,9 @@ import (
 )
 
 type Person struct {
-	ID       string `json:"id"`
-	Login    string `json:"login"`
-	Password string `json:"Password"`
+	ID       string `json:"id",gorethink:"id"`
+	Login    string `json:"login",gorethink:"login"`
+	Password string `json:"Password",gorethink:"Password"`
 }
 
 var session *r.Session
@@ -33,4 +33,26 @@ func GetPersons() ([]Person, error) {
 	}
 
 	return response, nil
+}
+
+func NewPerson(p Person) (Person, error) {
+	res, err := r.UUID().Run(session)
+	if err != nil {
+		return p, err
+	}
+
+	var UUID string
+	err = res.One(&UUID)
+	if err != nil {
+		return p, err
+	}
+
+	p.ID = UUID
+
+	res, err = r.DB("Persons").Table("Persons").Insert(p).Run(session)
+	if err != nil {
+		return p, err
+	}
+
+	return p, nil
 }
